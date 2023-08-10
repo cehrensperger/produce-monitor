@@ -34,9 +34,9 @@ function postData(retry) {
         },
         body: JSON.stringify(data),
     }).then((res) => {
-        res.text().then((text) => {
-            console.log(text);
-        });
+        return res.json();
+    }).then((data) => {
+        console.log(data);
     }).catch(error => {
         console.log(error);
         postData(false);
