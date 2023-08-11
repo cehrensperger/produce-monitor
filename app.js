@@ -22,10 +22,13 @@ const server = http.createServer((req, res) => {
 
         req.on('end', () => {
             try {
-                let number = JSON.parse(postedData);
-                data = number;
-
-                let array = JSON.parse(postedData);
+                console.log(postedData);
+                let array = Object.entries(JSON.parse(postedData));
+                let key = array[0][0];
+                let value = array[0][1];
+                array[0] = key;
+                array[1] = value;
+                console.log(array);
                 let responseMessage = "Mapping was set";
 
                 if(Array.isArray(array)) {
