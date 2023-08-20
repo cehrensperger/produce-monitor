@@ -5,15 +5,22 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT;
+const map = new Map();
 
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+app.use(express.static('./vite-project/dist/'));
 
 app.post('/', (req, res) => {
-    console.log(req.body[0]);
+    if(req.body.itemID == undefined || req.body.itemPercent == undefined) {
+      res.status(400).json({
+        message: "Invalid Data"
+      });
+    } else {
+      map.set(req.body.itemID, req.body.itemPercent);
+      console.log(map.entries());
+    }
+
     res.status(200).json({
         message: "Success"
       });
