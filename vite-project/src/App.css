@@ -1,42 +1,41 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+
+html, body, #app, #app>div {
+  height: 100%;
+  width: 100%;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.container {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  top:0;
+  bottom:20;
+  left:0;
+  right:0;
+  justify-content: space-between;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+ul {
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  top:50%;
+  align-items: left;
+  flex: 0.9;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.idMapEditor {
+  display: flex;
+  flex-direction: column; 
 }
 
-.card {
-  padding: 2em;
+li {
+  outline: 2px solid black;
+  border-radius: 25px;
+  margin-top: 50px;
+  text-indent: 2%;
+  height: 100px;
+  flex-shrink: 0;
+  line-height: 100px;
 }
 
-.read-the-docs {
-  color: #888;
-}
