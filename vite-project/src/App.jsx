@@ -1,11 +1,25 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css';
+import { socket } from './socket';
 
 
 
 function App() {
-  console.log("App rendered");
   const [idToNameMap, setIdToNameMap] = useState({0:"Bananas", 1:"Onions", 2:"something else", 3:"", 4:""});
+  const [idToPercentMap, setIdToPercentMap] = useState({});
+  useEffect(() => {
+    function onUpdate(newMapping) {
+      console.log("updating");
+      setIdToPercentMap((previous) => {return {...previous, newMapping}});
+    }
+
+    socket.on('update', onUpdate);
+
+    return () => {
+      socket.off('update', onUpdate);
+    }
+  }, []);
+  
   let options = [];
   for(const item of Object.keys(idToNameMap)){
     let labelString = item.toString() + ' -- ' + idToNameMap[item];
