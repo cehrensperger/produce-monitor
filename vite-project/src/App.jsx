@@ -1,16 +1,35 @@
 import { useState, useEffect } from 'react'
 import './App.css';
 import { socket } from './socket';
+import ProgressBar from "@ramonak/react-progress-bar";
 
 
 
 function App() {
-  const [idToNameMap, setIdToNameMap] = useState({0:"Bananas", 1:"Onions", 2:"something else", 3:"", 4:""});
+
+  function getInitialNameState() {
+    // Fetch all name mappings from server
+    console.log("fetching all names from server");
+    fetch("/allNames").then(async (data) => {
+      const json = await data.json();
+      console.log(json);
+    });
+  }
+  const [idToNameMap, setIdToNameMap] = useState({0:"Bananas", 1:"Onions", 2:"sdfasfdasfasfasdfasdfasdfasdfasdfasdfasdfasdfdasdfasdf", 3:"", 4:""});
   const [idToPercentMap, setIdToPercentMap] = useState({});
+  
+  
   useEffect(() => {
+    getInitialNameState();
+    
     function onUpdate(newMapping) {
       console.log("updating");
-      setIdToPercentMap((previous) => {return {...previous, newMapping}});
+      console.log("new mapping:" + newMapping);
+      setIdToPercentMap((previous) => {
+        let result = {...previous, ...newMapping};
+        console.log("result: " + result);
+        return result});
+      console.log(idToPercentMap);
     }
 
     socket.on('update', onUpdate);
@@ -19,6 +38,7 @@ function App() {
       socket.off('update', onUpdate);
     }
   }, []);
+
   
   let options = [];
   for(const item of Object.keys(idToNameMap)){
@@ -32,14 +52,9 @@ function App() {
   return (
     <div className="container">
       <ul className="dataBars" list-style-type="none">
-        <li key="1"><div className="liDiv">list item 1</div></li>
-        <li key="2">list item 2</li>
-        <li key="3">list item 3</li>
-        <li key="4">list item 4</li>
-        <li key="5">list item 5</li>
-        <li key="6">list item 6</li>
-        <li key="7">list item 7</li>
-        
+        <DataEntries 
+        idToPercentMap={idToPercentMap} 
+        idToNameMap={idToNameMap} />
       </ul>
       
       <MapEditor 
@@ -50,6 +65,30 @@ function App() {
       
     </div>
   );
+}
+
+function DataEntries({idToPercentMap, idToNameMap}) {
+  console.log("rendering DataEntires");
+  console.log(idToPercentMap);
+  let entries = [];
+  for(const id of Object.keys(idToPercentMap).sort((a,b) => {return idToPercentMap[a]-idToPercentMap[b];})){
+    console.log("id: " + id);
+    let name = idToNameMap[id];
+    let percent = idToPercentMap[id];
+    if(name === undefined) {
+      name = "FoodID#:" + id;
+    }
+    entries.push(
+    <li key={id}>
+      <div className="liDiv">
+        <label className="foodName">{name}</label>
+        <ProgressBar className="bar" completed={percent} customLabel=" "/>
+        <label className="percent">{percent}%</label>
+      </div>
+    </li>);
+  }
+
+  return entries;
 }
 
 function MapEditor({ defaultOption, options, idToNameMap, setIdToNameMap }) {
@@ -71,6 +110,14 @@ function MapEditor({ defaultOption, options, idToNameMap, setIdToNameMap }) {
         [id]: newName})});
       setCurrentName(newName);
       document.getElementById("nameForm").value = '';
+
+      // fetch("ip_address somehow/nameMapping", {
+      //   method: 'POST',
+      //   headers: {
+      //       'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({itemId: id, itemName: newName})
+      // });
     }
   }
 
@@ -87,18 +134,6 @@ function MapEditor({ defaultOption, options, idToNameMap, setIdToNameMap }) {
   </section>);
 }
 
-function DataEntry({name, percent}) {
-  return (
-  <div>
-    <li key="1">name: {<PercentBar />}</li>
-  </div>);
-}
-
-function PercentBar() {
-  return ({
-
-  });
-}
 
 
 function Options({items}) {

@@ -39,3 +39,27 @@ li {
   line-height: 100px;
 }
 
+.liDiv {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.bar {
+  margin-left: 50px;
+  margin-right: 50px;
+  display: flex;
+  flex-shrink: 20;
+  width: 80%;
+}
+
+.percent{
+  margin-right: 20px;
+}
+
+.foodName{
+  margin-left: 20px;
+}
+
