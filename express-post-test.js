@@ -9,7 +9,7 @@ let numRetries = 0;
 let maxRetries = 1;
 
 let data = {
-    "itemId": 2,
+    "itemId": 3,
     "itemPercent": 20
 };
 

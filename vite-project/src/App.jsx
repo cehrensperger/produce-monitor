@@ -7,29 +7,69 @@ import ProgressBar from "@ramonak/react-progress-bar";
 
 function App() {
 
-  function getInitialNameState() {
+  async function getInitialNameState() {
     // Fetch all name mappings from server
     console.log("fetching all names from server");
-    fetch("/allNames").then(async (data) => {
+    const result = await fetch("/allNames").then(async (data) => {
       const json = await data.json();
-      console.log(json);
+      console.log("json: ", json);
+      const rows = [];
+      json.forEach((data) => {
+        rows.push(data['p'].split(',').map((element) => {
+          return element.replace(/[()"']/g, '');
+        }));
+      });
+      
+
+      let initialState = {};
+      for(const row of rows) {
+        initialState[parseInt(row[0])] = row[1];
+      }
+
+      return initialState;
     });
+    console.log(result);
+    return result;
   }
-  const [idToNameMap, setIdToNameMap] = useState({0:"Bananas", 1:"Onions", 2:"sdfasfdasfasfasdfasdfasdfasdfasdfasdfasdfasdfdasdfasdf", 3:"", 4:""});
-  const [idToPercentMap, setIdToPercentMap] = useState({});
+
+  async function getInitialPercentState() {
+    console.log("getting initial percent state");
+    const result = await fetch("/allPercents");
+    const json = await result.json();
+    console.log("initial percent state: ", json);
+    return json;
+  }
+  const [idToNameMap, setIdToNameMap] = useState();
+  const [idToPercentMap, setIdToPercentMap] = useState();
   
   
   useEffect(() => {
-    getInitialNameState();
+    //ERROR with stuff for some reason
+    getInitialNameState().then((result) => {
+      setIdToNameMap(result);
+    });
+
+    getInitialPercentState().then((result) => {
+      setIdToPercentMap(result);
+    });
     
     function onUpdate(newMapping) {
       console.log("updating");
-      console.log("new mapping:" + newMapping);
+      console.log("new mapping:" + JSON.stringify(newMapping));
       setIdToPercentMap((previous) => {
         let result = {...previous, ...newMapping};
         console.log("result: " + result);
         return result});
-      console.log(idToPercentMap);
+
+      // console.log(parseInt(Object.keys(newMapping)[0]));
+      // if(!(parseInt(Object.keys(newMapping)[0]) in idToNameMap)) {
+      //   console.log("setting name to empty");
+      //   setIdToNameMap((previous) => ({
+      //     ...previous,
+      //     [parseInt(Object.keys(newMapping)[0])]: '',
+      //   }));
+      // }
+      // console.log(idToPercentMap);
     }
 
     socket.on('update', onUpdate);
@@ -41,24 +81,24 @@ function App() {
 
   
   let options = [];
-  for(const item of Object.keys(idToNameMap)){
-    let labelString = item.toString() + ' -- ' + idToNameMap[item];
-    options.push({value: item, label: labelString});
+  if(idToNameMap != undefined && idToNameMap != null) {
+    for(const item of Object.keys(idToNameMap)){
+      let labelString = item.toString() + ' -- ' + idToNameMap[item];
+      options.push({value: item, label: labelString});
+    }
   }
   console.log(options);
-
-  let defaultOption = options[0].value.toString();
   
   return (
     <div className="container">
       <ul className="dataBars" list-style-type="none">
         <DataEntries 
         idToPercentMap={idToPercentMap} 
-        idToNameMap={idToNameMap} />
+        idToNameMap={idToNameMap}
+        setIdToNameMap={setIdToNameMap} />
       </ul>
       
       <MapEditor 
-      defaultOption={defaultOption} 
       options={options}
       idToNameMap={idToNameMap}
       setIdToNameMap={setIdToNameMap}/>
@@ -67,31 +107,39 @@ function App() {
   );
 }
 
-function DataEntries({idToPercentMap, idToNameMap}) {
+function DataEntries({idToPercentMap, idToNameMap, setIdToNameMap}) {
   console.log("rendering DataEntires");
   console.log(idToPercentMap);
   let entries = [];
-  for(const id of Object.keys(idToPercentMap).sort((a,b) => {return idToPercentMap[a]-idToPercentMap[b];})){
-    console.log("id: " + id);
-    let name = idToNameMap[id];
-    let percent = idToPercentMap[id];
-    if(name === undefined) {
-      name = "FoodID#:" + id;
+  if(idToPercentMap != null && idToPercentMap != undefined) {
+    for(let id of Object.keys(idToPercentMap).sort((a,b) => {return idToPercentMap[parseInt(a)]-idToPercentMap[parseInt(b)];})){
+      id = parseInt(id);
+      console.log("id: " + id);
+      let name = idToNameMap ? idToNameMap[id] : undefined;
+      console.log("name: ", name);
+      let percent = idToPercentMap[id];
+      if(name === undefined) {
+        name = "FoodID#:" + id;
+        setIdToNameMap((previous) => ({
+          ...previous,
+          [id]: name,
+        }));
+      }
+      entries.push(
+      <li key={id}>
+        <div className="liDiv">
+          <label className="foodName">{name}</label>
+          <ProgressBar className="bar" completed={percent} customLabel=" "/>
+          <label className="percent">{percent}%</label>
+        </div>
+      </li>);
     }
-    entries.push(
-    <li key={id}>
-      <div className="liDiv">
-        <label className="foodName">{name}</label>
-        <ProgressBar className="bar" completed={percent} customLabel=" "/>
-        <label className="percent">{percent}%</label>
-      </div>
-    </li>);
   }
 
   return entries;
 }
 
-function MapEditor({ defaultOption, options, idToNameMap, setIdToNameMap }) {
+function MapEditor({ options, idToNameMap, setIdToNameMap }) {
 
   const [currentName, setCurrentName] = useState("New Name");
 
@@ -110,27 +158,27 @@ function MapEditor({ defaultOption, options, idToNameMap, setIdToNameMap }) {
         [id]: newName})});
       setCurrentName(newName);
       document.getElementById("nameForm").value = '';
-
-      // fetch("ip_address somehow/nameMapping", {
-      //   method: 'POST',
-      //   headers: {
-      //       'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({itemId: id, itemName: newName})
-      // });
+        console.log("posting id to name mapping to db");
+        console.log(id, newName);
+      fetch("/nameMapping", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({itemId: id, itemName: newName})
+      });
     }
   }
 
   return(
   <section className="idMapEditor">
-      <label>Map Food Item ID Number to a Name</label>
-      <label>ID Number</label>
-      <select id="idsDropdown" onChange={handleDropdown}>
-        <option value="">{defaultOption}</option>
-        <Options items={options}/>
-      </select>
+      <label id="title">Give Food Item A Name</label>
+      <label id="subTitle">ID Number</label>
+        <select id="idsDropdown" onChange={handleDropdown}>
+          <Options items={options}/>
+        </select>
       <input id="nameForm" type="text" placeholder={currentName}/>
-      <button onClick={handleClick}>Submit New Name</button>
+      <button id="submit"onClick={handleClick}>Submit New Name</button>
   </section>);
 }
 

@@ -15,7 +15,6 @@ const server = http.createServer(app);
 const io = new Server(server);
 const port = process.env.PORT;
 const map = new Map();
-const idToNameMap = new Map();
 const client = new pg.Client(
   {ssl: { rejectUnauthorized: false }}
 );
@@ -55,12 +54,23 @@ app.post('/', (req, res) => {
 });
 
 app.post('/nameMapping', (req, res) => {
-  if(req.body.itemId == undefine || req.body.itemName == undefined) {
+  if(req.body.itemId == undefined || req.body.itemName == undefined) {
+    console.log("received invalid data");
     res.status(400).json({
       message: "Invalid Data"
     });
   } else {
-    idToNameMap.set(req.body.itemId, req.body.itemName);
+    //insert into database
+    console.log("inserting new mapping into db");
+    console.log(req.body.itemId, req.body.itemName);
+    const query = {
+      text: 'INSERT INTO produce(id, name) VALUES($1, $2) ON CONFLICT (id) DO UPDATE SET name = $2;',
+      values: [req.body.itemId, req.body.itemName],
+    }
+    client.query(query).catch(() => {
+      console.log('error with querying');
+    });
+    //idToNameMap.set(req.body.itemId, req.body.itemName);
   }
 });
 
@@ -70,7 +80,8 @@ app.get('/nameMapping', (req, res) => {
       message: "Invalid Data"
     });
   } else {
-    res.send(idToNameMap.get(req.body.itemId));
+    //select from database
+    //res.send(idToNameMap.get(req.body.itemId));
   }
 });
 
@@ -78,12 +89,21 @@ app.get('/allNames', async (req, res) => {
   // return all id to name mappings
   const dbResponse = await client.query('SELECT p FROM produce p');
   const allNames = dbResponse.rows; 
+  console.log(allNames);
   res.json(allNames);   //JSON-ify?
 });
 
 app.get('/allPercents', (req, res) => {
   // return all id to percent mappings
-  res.send(idToNameMap);   // JSON-ify?
+
+  const percentsJSON = {};
+  map.forEach((value, key) => {
+    percentsJSON[parseInt(key)] = parseInt(value);
+  });
+
+  res.json(percentsJSON);
+  console.log("sending all percents: ", percentsJSON);
+  
 })
 
 // app.listen(port, process.env.IP_ADDRESS, () => {

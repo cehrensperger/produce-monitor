@@ -26,7 +26,27 @@ ul {
 
 .idMapEditor {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: 20px;
+  margin-right: 40px;
+}
+
+.idMapEditor #title {
+  font-weight: 500;
+}
+
+.idMapEditor #subTitle {
+  margin-top: 10px; /* Apply spacing between child elements */
+}
+
+.idMapEditor #nameForm {
+  
+  margin-top: 10px;
+}
+
+.idMapEditor #submit {
+  margin-top: 20px;
 }
 
 li {
