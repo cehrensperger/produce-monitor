@@ -11,4 +11,9 @@ This produce monitoring solution uses ESP32's for the reading and sending of pho
 ## Example Website Screenshot
 ![image](https://github.com/cehrensperger/produce-monitor/assets/19954402/d6aabf6f-bf2c-4e74-a4cf-0960b6ac6f36)
 
+## Mobile Screenshot
+![Screenshot_20230913-122019](https://github.com/cehrensperger/produce-monitor/assets/19954402/ce30e540-05ef-417c-ad9b-aea48d8db4d2)
+
+
+
 
