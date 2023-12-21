@@ -1,3 +1,8 @@
+/*
+* Code for the server before using express. 
+* Used for testing/learning purposes and as a proof of concept.
+* This code is not meant to be used in production.
+*/
 import dotenv from 'dotenv';
 dotenv.config();
 

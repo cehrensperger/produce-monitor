@@ -1,9 +1,10 @@
-
+/*This defines the height and width of the app*/
 html, body, #app, #app>div {
   height: 100%;
   width: 100%;
 }
 
+/*This is the main container for the app*/
 .container {
   display: flex;
   flex-direction: row;
@@ -15,6 +16,7 @@ html, body, #app, #app>div {
   justify-content: space-between;
 }
 
+/*Container for all data bars (entries for each food item that displays the food name and the estimated percent left of it)*/
 ul {
   list-style-type: none;
   display: flex;
@@ -24,31 +26,37 @@ ul {
   flex: 0.9;
 }
 
+/*This defines the style of the elements for changing food names 
+(the dropdown menu, the text box, the submit button, and the label on top)*/ 
 .idMapEditor {
   display: flex;
   flex-direction: column;
-  /*justify-content: space-between;*/
   margin-top: 20px;
   margin-right: 40px;
 }
 
+/*The label on top of the elements for changing food names ("Give Food Item A Name")*/
 .idMapEditor #title {
   font-weight: 500;
 }
 
+/*The subTitle above the dropdown menu for selecting which food id you would like to change the name of ("ID Number")*/
 .idMapEditor #subTitle {
   margin-top: 10px; /* Apply spacing between child elements */
 }
 
+/*The text box for inputting the new food name*/
 .idMapEditor #nameForm {
   
   margin-top: 10px;
 }
 
+/*The submit button*/
 .idMapEditor #submit {
   margin-top: 20px;
 }
 
+/*Style for each individual data bar (entry that displays the food name and the estimated percent left of it)*/
 li {
   outline: 2px solid black;
   border-radius: 25px;
@@ -59,6 +67,7 @@ li {
   line-height: 100px;
 }
 
+/*Style for a div put inside each data bar/li element*/
 .liDiv {
   width: 100%;
   display: flex;
@@ -67,6 +76,7 @@ li {
   flex-shrink: 0;
 }
 
+/*Style for the progess bar itself (within each data bar/li element)*/
 .bar {
   margin-left: 50px;
   margin-right: 50px;
@@ -75,15 +85,18 @@ li {
   width: 80%;
 }
 
+/*Style for the label that shows the esimated percent left of a food item as text to the right of the progress bar*/
 .percent{
   margin-right: 20px;
 }
 
+/*Style for the labe that shows the food name (or food id# if it has not yet been given a name) to the left of the progress bar*/
 .foodName{
   margin-left: 20px;
   white-space: nowrap; /* Prevent text from wrapping when there is a space in the food name */
 }
 
+/*Style for the submit button*/
 .button {
   background-color: #4CAF50;
 }

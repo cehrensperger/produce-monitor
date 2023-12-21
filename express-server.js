@@ -31,17 +31,23 @@ map.set(5, 75);
 map.set(2, 90);
 map.set(3, 5);
 
-// await client.connect();
-// console.log("Connected to database");
-// const tables = await client.query('SELECT FROM pg_catalog.pg_tables WHERE schemaname = \'public\' AND tablename = \'produce\'');
-// if(tables.rows.length == 0) {
-//   console.log('Creating new table.');
-//   const res = await client.query('CREATE TABLE produce (id int primary key, name varchar(20));');
-//   console.log(res.rows);
-// } else {
-//   console.log('Table already exists, skipping table creation.');
-// }
+// Connect to the database.
+await client.connect();
+console.log("Connected to database");
 
+// Check for the existence of the produce table.
+const tables = await client.query('SELECT FROM pg_catalog.pg_tables WHERE schemaname = \'public\' AND tablename = \'produce\'');
+
+// Create a new table if it doesn't exist already.
+if(tables.rows.length == 0) {
+  console.log('Creating new table.');
+  const res = await client.query('CREATE TABLE produce (id int primary key, name varchar(20));');
+  console.log(res.rows);
+} else {
+  console.log('Table already exists, skipping table creation.');
+}
+
+// On a post request to the root endpoint, update the *percent* map and emit a websocket event to all connected clients.
 app.post('/', (req, res) => {
     if(req.body.itemId == undefined || req.body.itemPercent == undefined) {
       res.status(400).json({
@@ -60,6 +66,7 @@ app.post('/', (req, res) => {
       });
 });
 
+// On a post request to the /nameMapping endpoint, update the name map on the database provided that the data is valid.
 app.post('/nameMapping', (req, res) => {
   if(req.body.itemId == undefined || req.body.itemName == undefined) {
     console.log("received invalid data");
@@ -67,7 +74,7 @@ app.post('/nameMapping', (req, res) => {
       message: "Invalid Data"
     });
   } else {
-    //insert into database
+    // Insert into database.
     console.log("inserting new mapping into db");
     console.log(req.body.itemId, req.body.itemName);
     const query = {
@@ -77,10 +84,11 @@ app.post('/nameMapping', (req, res) => {
     client.query(query).catch(() => {
       console.log('error with querying');
     });
-    //idToNameMap.set(req.body.itemId, req.body.itemName);
   }
 });
 
+// No longer used. Was used for testing purposes.
+// Gets a name from an internal idToNameMap that is stored in memory. (no longer exists)
 app.get('/nameMapping', (req, res) => {
   if(req.body.itemId == undefined) {
     res.status(400).json({
@@ -92,14 +100,17 @@ app.get('/nameMapping', (req, res) => {
   }
 });
 
+// On a get request to the /allNames mapping, query the database for all id to name mappings and return them.
 app.get('/allNames', async (req, res) => {
-  // return all id to name mappings
+  // Return all id to name mappings.
   const dbResponse = await client.query('SELECT p FROM produce p');
   const allNames = dbResponse.rows; 
   console.log(allNames);
-  res.json(allNames);   //JSON-ify?
+  res.json(allNames);
 });
 
+// On a get request to the /allPercents mapping, return all id to percent mappings by
+// converting the internally stored map to a JSON object and returning it.
 app.get('/allPercents', (req, res) => {
   // return all id to percent mappings
 
@@ -113,14 +124,13 @@ app.get('/allPercents', (req, res) => {
   
 })
 
-// app.listen(port, process.env.IP_ADDRESS, () => {
-//   console.log(`Example app listening on port ${port}`);
-// });
 
+// Start the server and set it to listen on the port specified in the .env file.
 server.listen(port, process.env.IP_ADDRESS, () => {
-  console.log('listening on *:3000');
+  console.log('listening on ' + process.env.IP_ADDRESS + ':' + port);
 });
 
+// When the server is closed, close the database connection.
 server.on('close', async () => {
   console.log('closing db connection');
   try {
@@ -141,9 +151,3 @@ reader.on('line', (line) => {
     server.close();
   }
 });
-
-// request(app)
-//   .get('/allNmes')
-//   .expect((res) => {
-//     console.log(res);
-//   });
