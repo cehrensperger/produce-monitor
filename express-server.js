@@ -24,16 +24,23 @@ app.use(cors());
 
 app.use(express.static('./vite-project/dist/'));
 
-await client.connect();
-console.log("Connected to database");
-const tables = await client.query('SELECT FROM pg_catalog.pg_tables WHERE schemaname = \'public\' AND tablename = \'produce\'');
-if(tables.rows.length == 0) {
-  console.log('Creating new table.');
-  const res = await client.query('CREATE TABLE produce (id int primary key, name varchar(20));');
-  console.log(res.rows);
-} else {
-  console.log('Table already exists, skipping table creation.');
-}
+map.set(0, 50);
+map.set(1, 50);
+map.set(4, 20);
+map.set(5, 75);
+map.set(2, 90);
+map.set(3, 5);
+
+// await client.connect();
+// console.log("Connected to database");
+// const tables = await client.query('SELECT FROM pg_catalog.pg_tables WHERE schemaname = \'public\' AND tablename = \'produce\'');
+// if(tables.rows.length == 0) {
+//   console.log('Creating new table.');
+//   const res = await client.query('CREATE TABLE produce (id int primary key, name varchar(20));');
+//   console.log(res.rows);
+// } else {
+//   console.log('Table already exists, skipping table creation.');
+// }
 
 app.post('/', (req, res) => {
     if(req.body.itemId == undefined || req.body.itemPercent == undefined) {

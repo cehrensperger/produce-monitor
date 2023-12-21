@@ -27,7 +27,7 @@ ul {
 .idMapEditor {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  /*justify-content: space-between;*/
   margin-top: 20px;
   margin-right: 40px;
 }
@@ -81,5 +81,10 @@ li {
 
 .foodName{
   margin-left: 20px;
+  white-space: nowrap; /* Prevent text from wrapping when there is a space in the food name */
+}
+
+.button {
+  background-color: #4CAF50;
 }
 

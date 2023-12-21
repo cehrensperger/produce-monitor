@@ -44,7 +44,6 @@ function App() {
   
   
   useEffect(() => {
-    //ERROR with stuff for some reason
     getInitialNameState().then((result) => {
       setIdToNameMap(result);
     });
@@ -60,16 +59,6 @@ function App() {
         let result = {...previous, ...newMapping};
         console.log("result: " + result);
         return result});
-
-      // console.log(parseInt(Object.keys(newMapping)[0]));
-      // if(!(parseInt(Object.keys(newMapping)[0]) in idToNameMap)) {
-      //   console.log("setting name to empty");
-      //   setIdToNameMap((previous) => ({
-      //     ...previous,
-      //     [parseInt(Object.keys(newMapping)[0])]: '',
-      //   }));
-      // }
-      // console.log(idToPercentMap);
     }
 
     socket.on('update', onUpdate);
@@ -178,7 +167,7 @@ function MapEditor({ options, idToNameMap, setIdToNameMap }) {
           <Options items={options}/>
         </select>
       <input id="nameForm" type="text" placeholder={currentName}/>
-      <button id="submit"onClick={handleClick}>Submit New Name</button>
+      <button className="button" id="submit"onClick={handleClick}>Submit New Name</button>
   </section>);
 }
 
