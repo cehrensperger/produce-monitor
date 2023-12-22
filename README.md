@@ -9,10 +9,12 @@ The main motivating experience for this project originated from my time working 
 This produce monitoring solution uses ESP32's for the reading and sending of photoresistor data to a locally hosted Node.js/Express.js server. This server is also able to host the React website for use on the same internet connection as the grocery store. Each ESP32 is given an ID to associate its readings with and therefore, a way to keep track of which IDs correspond to which food items was needed. For this, I used an AWS RDS Database which stores mappings between IDs and food item names. This way, store employees can change the name of a food item through the website instead of having to change the code on the ESP32 for the food item they want to rename. This also means an ESP32 can easily be moved to measure a different food item.
 
 ## Example Website Screenshot
-![image](https://github.com/cehrensperger/produce-monitor/assets/19954402/d6aabf6f-bf2c-4e74-a4cf-0960b6ac6f36)
+![screencapture-192-168-1-180-3000-2023-12-21-14_57_07](https://github.com/cehrensperger/produce-monitor/assets/19954402/957d8f5f-3d33-433d-ad23-ff0bf855df6d)
+
 
 ## Mobile Screenshot
-![Screenshot_20230913-122019](https://github.com/cehrensperger/produce-monitor/assets/19954402/ce30e540-05ef-417c-ad9b-aea48d8db4d2)
+![Screenshot_20231221-145423](https://github.com/cehrensperger/produce-monitor/assets/19954402/93cb6d94-1def-4c7a-87cf-a75497ed4085)
+
 
 
 
